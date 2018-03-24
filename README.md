@@ -4,7 +4,7 @@ This is an automatic plant monitoring system where our proposed project can help
 
 IOT Hackathon 2018, Puppet
 
-By Suer, Daniel Phillips, Alex Wexton, Olivia Cole, Sowmya Dinavahi
+By Suer, Daniel Phillips, Alex Wexton, Olivia Cole, Sowmya
 
 ### Setup:
 ![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180324_124542_HDR.jpg)
