@@ -27,15 +27,20 @@
 // button state
 bool current = false;
 bool last = false;
+unsigned long currTime;
+unsigned long timeAtLastWater;
+unsigned long wateringInterval = 10000; //10 seconds
 
-// set up the 'digital' feed
+// set up the 'digital' and light feeds
 AdafruitIO_Feed *digital = io.feed("digital");
 AdafruitIO_Feed *light = io.feed("light");
 
 void setup() {
-
+  timeAtLastWater = - wateringInterval;
   // set button pin as an input
   pinMode(BUTTON_PIN, INPUT);
+
+  // set LED pin as OUTPUT
   pinMode(LED_PIN, OUTPUT);
 
   // start the serial connection
@@ -47,7 +52,7 @@ void setup() {
   // connect to io.adafruit.com
   Serial.print("Connecting to Adafruit IO");
   io.connect();
-  light->onMessage(handleMessage);
+//  light->onMessage(handleMessage);
 
 
   // wait for a connection
@@ -73,11 +78,24 @@ void loop() {
   // grab the current state of the button.
   // we have to flip the logic because we are
   // using a pullup resistor.
-  if (digitalRead(BUTTON_PIN) == LOW)
+  if (digitalRead(BUTTON_PIN) == LOW){
+    Serial.println("btn pressed");
     current = true;
+    timeAtLastWater = millis();
+  }
   else
     current = false;
 
+  currTime = millis();
+
+  if(currTime > (timeAtLastWater + wateringInterval)){
+     Serial.println("needs watering");
+     digitalWrite(LED_PIN, HIGH);
+  }
+  else{
+     digitalWrite(LED_PIN, LOW);
+  }
+ 
   // return if the value hasn't changed
   if (current == last)
     return;
@@ -91,8 +109,8 @@ void loop() {
   last = current;
 
 }
-// this function is called whenever an feed message is received
 
+// this function is called whenever an feed message is received
 void handleMessage(AdafruitIO_Data *data) {
   Serial.print("received <- ");
 
@@ -101,8 +119,8 @@ void handleMessage(AdafruitIO_Data *data) {
   else
     Serial.println("LOW");
 
-                   // write the current state of the led
-                   digitalWrite(LED_PIN, data->toPinLevel());
-                 }
+   // write the current state of the led
+   digitalWrite(LED_PIN, data->toPinLevel());
+ }
 
 

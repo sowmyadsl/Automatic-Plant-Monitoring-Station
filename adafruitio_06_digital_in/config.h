@@ -1,3 +1,14 @@
+#include <AdafruitIO.h>
+#include <AdafruitIO_Dashboard.h>
+#include <AdafruitIO_Data.h>
+#include <AdafruitIO_Definitions.h>
+#include <AdafruitIO_Ethernet.h>
+#include <AdafruitIO_Feed.h>
+//#include <AdafruitIO_FONA.h>
+#include <AdafruitIO_Group.h>
+#include <AdafruitIO_MQTT.h>
+#include <AdafruitIO_WiFi.h>
+
 /************************ Adafruit IO Config *******************************/
 
 // visit io.adafruit.com if you need to create an account,
