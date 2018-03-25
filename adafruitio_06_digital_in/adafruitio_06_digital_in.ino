@@ -40,7 +40,10 @@ int toneFreq[] = { 262, 294, 330   // C4
 int toneCount = sizeof(toneFreq)/sizeof(int);
 
 int curLightVal = 0;
-int lastLightVal = -1;
+int lastLightReadTime = -1;
+int lightThreshold = 0;
+int moistureLevel = 0;
+int moistureThreshold = 0;
 
 
 
@@ -48,7 +51,11 @@ int lastLightVal = -1;
 AdafruitIO_Feed *digital = io.feed("digital");
 AdafruitIO_Feed *light = io.feed("light");
 AdafruitIO_Feed *waterIntervalFeed = io.feed("watering-interval");
+AdafruitIO_Feed *lightThresholdFeed = io.feed("light-threshold");
 AdafruitIO_Feed *analog = io.feed("analog");
+AdafruitIO_Feed *moistureLevelFeed = io.feed("moisture");
+AdafruitIO_Feed *moistureThresholdFeed = io.feed("moisture-threshold");
+
 
 
 void setup() {
@@ -71,6 +78,9 @@ void setup() {
   
 //  light->onMessage(handleMessage);
   waterIntervalFeed->onMessage(setWaterInterval);
+  lightThresholdFeed->onMessage(setLightThreshold);
+  moistureThresholdFeed->onMessage(setMoistureThreshold);
+  moistureLevelFeed->onMessage(readMoistureLevel);
 
   // wait for a connection
   while (io.status() < AIO_CONNECTED) {
@@ -92,6 +102,9 @@ void loop() {
   // io.adafruit.com, and processes any incoming data.
   io.run();
 
+  //***************
+  // Check if user has pressed the button to indicate that they have watered the plant
+  //***************
   // grab the current state of the button.
   // we have to flip the logic because we are
   // using a pullup resistor.
@@ -103,32 +116,44 @@ void loop() {
   else
     current = false;
 
-  if(wateringInterval > 0){
+  // return if the value hasn't changed
+  if (current != last) {
+  
+    // save the current state to the 'digital' feed on adafruit io
+    Serial.print("sending button -> ");
+    Serial.println(current);
+    digital->save(current);
+  
+    // store last button state
+    last = current;
+  }
+
+  //****************
+  // Check if water interval has passed or low moisture sensed
+  //****************
+  
+  if((wateringInterval > 0) || (moistureLevel > 0)){
     handleWaterChecks();
   }
 
-  if (millis() - lastLightVal > 1000)
-  {
-
+  //***************
+  // read the light value every 1 second
+  //***************
+  if (millis() - lastLightReadTime > 1000)
+  {  // read the light and send it to the feed, then update the time variable
     curLightVal = analogRead(PHOTOCELL_PIN);
-
-    //Serial.println(current);
-
     analog->save(curLightVal);
-    lastLightVal = millis();
+    lastLightReadTime = millis();
   }
 
-  // return if the value hasn't changed
-  if (current == last)
-    return;
-
-  // save the current state to the 'digital' feed on adafruit io
-  Serial.print("sending button -> ");
-  Serial.println(current);
-  digital->save(current);
-
-  // store last button state
-  last = current;
+  //***************
+  // Check for problems due to light
+  //***************
+  if (curLightVal < lightThreshold) {
+    // LED indicated need for light
+    // TODO: RGB code here
+    Serial.println("needs more light!");
+  }
 
 }
 
@@ -139,12 +164,13 @@ void loop() {
  */
 void handleWaterChecks(){
   
+   // current time in seconds
    currTime = millis()/1000;
      
-   if(currTime > (timeAtLastWater + wateringInterval)){
+   if((currTime > (timeAtLastWater + wateringInterval)) || (moistureLevel < moistureThreshold )){
     //plant needs to be watered
     
-    if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval == 0){
+    if((currTime)% alarmInterval == 0){
       //play alarm
       Serial.println("needs watering");
       for (int i=0; i < toneCount; ++i) {
@@ -160,35 +186,70 @@ void handleWaterChecks(){
     else {
        noTone(PIEZEO_PIN);
     }
-     digitalWrite(LED_PIN, HIGH);
+    // TODO: RGB code here
+    digitalWrite(LED_PIN, HIGH);
   }
   else{
     noTone(PIEZEO_PIN);
+    // TODO: RGB code here
     digitalWrite(LED_PIN, LOW);
   }
 
 }
 
+// ***************
+// update the soil moisture value
+// - Reading from a feed now, but could read from a sensor 
+// ***************
+
+void readMoistureLevel(AdafruitIO_Data *data){
+  moistureLevel = data->toInt();
+  Serial.println("moisture changed to " + moistureLevel);
+}
+
+// ***************
+// update the allowed number of days between watering
+// todo: this is now in seconds
+// ***************
+
 void setWaterInterval(AdafruitIO_Data *data){
-//    data->toInt()
     wateringInterval = data->toInt();
-    Serial.println("New interval: ");
-    Serial.print(wateringInterval);
-    
+    Serial.print("New interval: ");
+    Serial.println(wateringInterval);    
+}
+
+// ***************
+// update the threshold for required daily hours of light
+// ***************
+
+void setLightThreshold(AdafruitIO_Data *data){
+    lightThreshold = data->toInt();
+    Serial.print("New light threshold: ");
+    Serial.println(lightThreshold);    
+}
+
+// ***************
+// update the threshold for required moisture level (0-100)
+// ***************
+
+void setMoistureThreshold(AdafruitIO_Data *data){
+    moistureThreshold = data->toInt();
+    Serial.print("New moisture threshold: ");
+    Serial.println(moistureThreshold);    
 }
 
 
-// this function is called whenever an feed message is received
-void handleMessage(AdafruitIO_Data *data) {
-  Serial.print("received <- ");
-
-  if (data->toPinLevel() == HIGH)
-    Serial.println("HIGH");
-  else
-    Serial.println("LOW");
-
-   // write the current state of the led
-   digitalWrite(LED_PIN, data->toPinLevel());
- }
+//// this function is called whenever an feed message is received
+//void handleMessage(AdafruitIO_Data *data) {
+//  Serial.print("received <- ");
+//
+//  if (data->toPinLevel() == HIGH)
+//    Serial.println("HIGH");
+//  else
+//    Serial.println("LOW");
+//
+//   // write the current state of the led
+//   digitalWrite(LED_PIN, data->toPinLevel());
+// }
 
 
