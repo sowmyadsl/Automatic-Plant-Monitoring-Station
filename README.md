@@ -22,6 +22,7 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
 Daniel Phillips, Sowmya Dinavahi
 ### Adafruit.io dashboard
 [Dashboard](https://io.adafruit.com/sowmyadsl/public)*
+![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/dashboard.bmp)
 
 ### Physical Setup:
 
