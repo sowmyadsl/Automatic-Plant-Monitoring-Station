@@ -23,13 +23,19 @@
 // digital pin 5
 #define BUTTON_PIN 5
 #define LED_PIN 2
+#define PIEZEO_PIN 16
 
 // button state
 bool current = false;
 bool last = false;
 unsigned long currTime;
 unsigned long timeAtLastWater;
-unsigned long wateringInterval = 10000; //10 seconds
+unsigned long wateringInterval = 10; //10 seconds
+unsigned long alarmInterval = 5; //5 seconds
+int toneFreq[] = { 262, 294, 330   // C4
+                   }; // B4
+ int toneCount = sizeof(toneFreq)/sizeof(int);
+
 
 // set up the 'digital' and light feeds
 AdafruitIO_Feed *digital = io.feed("digital");
@@ -81,20 +87,51 @@ void loop() {
   if (digitalRead(BUTTON_PIN) == LOW){
     Serial.println("btn pressed");
     current = true;
-    timeAtLastWater = millis();
+    timeAtLastWater = millis()/1000;
   }
   else
     current = false;
 
-  currTime = millis();
+  currTime = millis()/1000;
 
   if(currTime > (timeAtLastWater + wateringInterval)){
-     Serial.println("needs watering");
+    if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval == 0){
+       Serial.println("needs watering");
+       for (int i=0; i < toneCount; ++i) {
+      tone(PIEZEO_PIN, toneFreq[i]);
+      delay(500);  // Pause for half a second.
+      }
+    // Loop down through all the tones from finish to start again.
+     for (int i=toneCount-1; i >= 0; --i) {
+      tone(PIEZEO_PIN, toneFreq[i]);
+      delay(500);
+      }
+    }
+    else {
+       noTone(PIEZEO_PIN);
+    }
+  //     Serial.println("needs watering");
      digitalWrite(LED_PIN, HIGH);
   }
   else{
-     digitalWrite(LED_PIN, LOW);
+    noTone(PIEZEO_PIN);
+    digitalWrite(LED_PIN, LOW);
   }
+//  if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval){
+//     Serial.println("needs watering");
+//     for (int i=0; i < toneCount; ++i) {
+//    tone(PIEZEO_PIN, toneFreq[i]);
+//    delay(500);  // Pause for half a second.
+//    }
+//  // Loop down through all the tones from finish to start again.
+//   for (int i=toneCount-1; i >= 0; --i) {
+//    tone(PIEZEO_PIN, toneFreq[i]);
+//    delay(500);
+//    }
+//  }
+//  else{
+//     noTone(PIEZEO_PIN);
+//  }
  
   // return if the value hasn't changed
   if (current == last)
