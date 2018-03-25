@@ -22,6 +22,7 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
 [Dashboard](https://io.adafruit.com/sowmyadsl/public)
 
 ### Physical Setup:
+
 ![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180324_124542_HDR.jpg)
 
 #### Wireframe:
@@ -29,8 +30,6 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
 
 ### Frontend UI Prototype:
 ![landing-page](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/Landing-page.png)
-
-  
 
 ## Challenges
 
