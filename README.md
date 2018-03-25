@@ -4,8 +4,10 @@ IOT Hackathon 2018, Puppet
 
 ## Sustainable Futures
 
- - Problem: Although growing your own plants provides many benefits for a sustainable future, urban dwellers often have little exposure to gardening, so they may not know how to care for plants.
- - benefits of growing plants:
+**Problem** : Although growing your own plants provides many benefits for a sustainable future, urban dwellers often have little exposure to gardening, so they may not know how to care for plants.
+
+**Benefits of growing plants:**
+
    - Improved air quality
    - Some plants (spider plants) minimize allergens
    - Supplemental food source
@@ -33,12 +35,12 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
 
 ## Challenges
 
- - provided moisture sensor isn't suitable for measuring soil moisture, so we simulated this using a adafruit feed
- - tactile button doesn't attach well to the board
+ - Provided moisture sensor isn't suitable for measuring soil moisture, so we simulated this using a adafruit feed
+ - Tactile button doesn't attach well to the board
 
 ## Future Explorations
 
  - Implement custom dashboard based on our prototype for better user experience
  - Use a soil-specific moisture sensor to replace simulated sensor
  - Integrate a temperature monitor
- - include email or phone notifications
+ - Include email or phone notifications
