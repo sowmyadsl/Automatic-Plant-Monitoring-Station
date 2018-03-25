@@ -6,6 +6,9 @@ IOT Hackathon 2018, Puppet
 
 By Suer, Daniel Phillips, Alex Wexton, Olivia Cole, Sowmya
 
+### Frontend UI Prototype:
+![landing-page](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/Landing-page.png)
+
 ### Setup:
 ![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180324_124542_HDR.jpg)
 
