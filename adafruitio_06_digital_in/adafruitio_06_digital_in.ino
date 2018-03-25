@@ -30,16 +30,18 @@ bool current = false;
 bool last = false;
 unsigned long currTime;
 unsigned long timeAtLastWater;
-unsigned long wateringInterval = 10; //10 seconds
+unsigned long wateringInterval = 0; //10 seconds, default watering interval
 unsigned long alarmInterval = 5; //5 seconds
 int toneFreq[] = { 262, 294, 330   // C4
                    }; // B4
- int toneCount = sizeof(toneFreq)/sizeof(int);
+int toneCount = sizeof(toneFreq)/sizeof(int);
 
 
 // set up the 'digital' and light feeds
 AdafruitIO_Feed *digital = io.feed("digital");
 AdafruitIO_Feed *light = io.feed("light");
+AdafruitIO_Feed *waterIntervalFeed = io.feed("watering-interval");
+
 
 void setup() {
   timeAtLastWater = - wateringInterval;
@@ -58,8 +60,9 @@ void setup() {
   // connect to io.adafruit.com
   Serial.print("Connecting to Adafruit IO");
   io.connect();
+  
 //  light->onMessage(handleMessage);
-
+  waterIntervalFeed->onMessage(setWaterInterval);
 
   // wait for a connection
   while (io.status() < AIO_CONNECTED) {
@@ -92,46 +95,10 @@ void loop() {
   else
     current = false;
 
-  currTime = millis()/1000;
-
-  if(currTime > (timeAtLastWater + wateringInterval)){
-    if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval == 0){
-       Serial.println("needs watering");
-       for (int i=0; i < toneCount; ++i) {
-      tone(PIEZEO_PIN, toneFreq[i]);
-      delay(500);  // Pause for half a second.
-      }
-    // Loop down through all the tones from finish to start again.
-     for (int i=toneCount-1; i >= 0; --i) {
-      tone(PIEZEO_PIN, toneFreq[i]);
-      delay(500);
-      }
-    }
-    else {
-       noTone(PIEZEO_PIN);
-    }
-  //     Serial.println("needs watering");
-     digitalWrite(LED_PIN, HIGH);
+  if(wateringInterval > 0){
+    handleWaterChecks();
   }
-  else{
-    noTone(PIEZEO_PIN);
-    digitalWrite(LED_PIN, LOW);
-  }
-//  if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval){
-//     Serial.println("needs watering");
-//     for (int i=0; i < toneCount; ++i) {
-//    tone(PIEZEO_PIN, toneFreq[i]);
-//    delay(500);  // Pause for half a second.
-//    }
-//  // Loop down through all the tones from finish to start again.
-//   for (int i=toneCount-1; i >= 0; --i) {
-//    tone(PIEZEO_PIN, toneFreq[i]);
-//    delay(500);
-//    }
-//  }
-//  else{
-//     noTone(PIEZEO_PIN);
-//  }
+ 
  
   // return if the value hasn't changed
   if (current == last)
@@ -145,6 +112,52 @@ void loop() {
   // store last button state
   last = current;
 
+}
+
+
+/**
+ * Checks to see if the user needs to water plant.
+ * If it needs watering, start alarm and activate light
+ */
+void handleWaterChecks(){
+  
+   currTime = millis()/1000;
+     
+   if(currTime > (timeAtLastWater + wateringInterval)){
+    //plant needs to be watered
+    
+    if((currTime - (timeAtLastWater + wateringInterval))% alarmInterval == 0){
+      //play alarm
+      Serial.println("needs watering");
+      for (int i=0; i < toneCount; ++i) {
+        tone(PIEZEO_PIN, toneFreq[i]);
+        delay(500);  // Pause for half a second.
+      }
+      // Loop down through all the tones from finish to start again.
+      for (int i=toneCount-1; i >= 0; --i) {
+        tone(PIEZEO_PIN, toneFreq[i]);
+        delay(500);
+      }
+    }
+    else {
+       noTone(PIEZEO_PIN);
+    }
+     digitalWrite(LED_PIN, HIGH);
+  }
+  else{
+    noTone(PIEZEO_PIN);
+    digitalWrite(LED_PIN, LOW);
+  }
+
+}
+
+void setWaterInterval(AdafruitIO_Data *data){
+//    data->toInt()
+    wateringInterval = data->toInt();
+    Serial.println("New interval: ");
+    Serial.print(wateringInterval);
+    
+  
 }
 
 // this function is called whenever an feed message is received
