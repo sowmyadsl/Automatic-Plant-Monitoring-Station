@@ -53,7 +53,7 @@ AdafruitIO_Feed *light = io.feed("light");
 AdafruitIO_Feed *waterIntervalFeed = io.feed("watering-interval");
 AdafruitIO_Feed *lightThresholdFeed = io.feed("light-threshold");
 AdafruitIO_Feed *analog = io.feed("analog");
-AdafruitIO_Feed *moistureLevelFeed = io.feed("moisture");
+AdafruitIO_Feed *moistureLevelFeed = io.feed("moisture-level");
 AdafruitIO_Feed *moistureThresholdFeed = io.feed("moisture-threshold");
 
 
@@ -139,11 +139,11 @@ void loop() {
   //***************
   // read the light value every 1 second
   //***************
-  if (millis() - lastLightReadTime > 1000)
+  if (millis()/1000 - lastLightReadTime > 10)
   {  // read the light and send it to the feed, then update the time variable
     curLightVal = analogRead(PHOTOCELL_PIN);
     analog->save(curLightVal);
-    lastLightReadTime = millis();
+    lastLightReadTime = millis()/1000;
   }
 
   //***************
