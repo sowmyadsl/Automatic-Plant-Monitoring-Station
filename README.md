@@ -1,6 +1,6 @@
 # Plant.io
 IOT Hackathon 2018, Puppet
-By Sue Robbins, Daniel Phillips, Alex Weston, Olivia Cole, Sowmya Dinavahi
+## By Sue Robbins, Daniel Phillips, Alex Weston, Olivia Cole, Sowmya Dinavahi
 
 ## Sustainable Futures
 
@@ -23,7 +23,7 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
 
 ### Physical Setup:
 
-![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180324_124542_HDR.jpg)
+![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180325_124104_HDR.jpg)
 
 #### Wireframe:
 ![screenshot](https://github.com/sowmyadsl/Automatic-Plant-Monitoring-Station/blob/master/Photos/20180324_124611_HDR.jpg)
@@ -36,10 +36,9 @@ Plant.io can help by monitoring moisture and light levels, reminding you when it
  - provided moisture sensor isn't suitable for measuring soil moisture, so we simulated this using a adafruit feed
  - tactile button doesn't attach well to the board
 
-## Future Directions
+## Future Explorations
 
- - Implement custom dashboard based on our prototype for better user experience 
+ - Implement custom dashboard based on our prototype for better user experience
  - Use a soil-specific moisture sensor to replace simulated sensor
  - Integrate a temperature monitor
  - include email or phone notifications
-
