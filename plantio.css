@@ -9,8 +9,8 @@
   box-shadow: 5px 10px 10px -9px #777;
   align-items: center;
   background-color: rgb(213, 255, 186) !important;
-/*  border-color: rgb(212, 237, 196);
-*/
+  border-color: rgb(213, 255, 186) !important;
+  
 }
 .card-title {
     font-family: 'Rubik', sans-serif;
