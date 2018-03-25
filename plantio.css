@@ -1,0 +1,47 @@
+
+.row {
+  height: 400px;
+}
+
+.card {
+  height: 100%;
+  margin: 30px 20px -20px 20px;
+  box-shadow: 5px 10px 10px -9px #777;
+  align-items: center;
+  background-color: rgb(213, 255, 186) !important;
+/*  border-color: rgb(212, 237, 196);
+*/
+}
+.card-title {
+    font-family: 'Rubik', sans-serif;
+}
+
+h1 {
+  text-align: center;
+  padding: 10px;
+  letter-spacing: 1.5rem;
+  color: rgb(24, 35, 17);
+}
+h5 {
+  text-align: center;
+  letter-spacing: 1rem;
+  color: rgb(24, 35, 17);
+}
+p {
+  text-align: justify;
+}
+.card-img-top {
+  height: 150px;
+  width: 150px;
+  object-fit: contain;
+  margin: 40px 5px 20px 5px;
+}
+
+.header {
+  margin-top: 30px;
+  font-family: 'Rubik', sans-serif;
+}
+
+.card-body {
+  padding: 10px 30px 0 30px;
+}
