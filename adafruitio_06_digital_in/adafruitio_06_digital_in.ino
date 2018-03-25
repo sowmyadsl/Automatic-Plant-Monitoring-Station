@@ -24,6 +24,9 @@
 #define BUTTON_PIN 5
 #define LED_PIN 2
 #define PIEZEO_PIN 16
+#define PHOTOCELL_PIN A0
+
+
 
 // button state
 bool current = false;
@@ -36,11 +39,16 @@ int toneFreq[] = { 262, 294, 330   // C4
                    }; // B4
 int toneCount = sizeof(toneFreq)/sizeof(int);
 
+int curLightVal = 0;
+int lastLightVal = -1;
+
+
 
 // set up the 'digital' and light feeds
 AdafruitIO_Feed *digital = io.feed("digital");
 AdafruitIO_Feed *light = io.feed("light");
 AdafruitIO_Feed *waterIntervalFeed = io.feed("watering-interval");
+AdafruitIO_Feed *analog = io.feed("analog");
 
 
 void setup() {
@@ -98,8 +106,18 @@ void loop() {
   if(wateringInterval > 0){
     handleWaterChecks();
   }
- 
- 
+
+  if (millis() - lastLightVal > 1000)
+  {
+
+    curLightVal = analogRead(PHOTOCELL_PIN);
+
+    //Serial.println(current);
+
+    analog->save(curLightVal);
+    lastLightVal = millis();
+  }
+
   // return if the value hasn't changed
   if (current == last)
     return;
@@ -157,8 +175,8 @@ void setWaterInterval(AdafruitIO_Data *data){
     Serial.println("New interval: ");
     Serial.print(wateringInterval);
     
-  
 }
+
 
 // this function is called whenever an feed message is received
 void handleMessage(AdafruitIO_Data *data) {
