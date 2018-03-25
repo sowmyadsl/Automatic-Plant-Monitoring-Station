@@ -33,7 +33,7 @@ bool current = false;
 bool last = false;
 unsigned long currTime;
 unsigned long timeAtLastWater;
-unsigned long wateringInterval = 0; //10 seconds, default watering interval
+unsigned long wateringInterval = 10; //10 seconds, default watering interval
 unsigned long alarmInterval = 5; //5 seconds
 int toneFreq[] = { 262, 294, 330   // C4
                    }; // B4
@@ -41,17 +41,18 @@ int toneCount = sizeof(toneFreq)/sizeof(int);
 
 int curLightVal = 0;
 int lastLightReadTime = -1;
-int lightThreshold = 0;
-int moistureLevel = 0;
-int moistureThreshold = 0;
-
+int lightThreshold = 700;
+int moistureLevel = 50;
+int moistureThreshold = 10;
 
 
 // set up the 'digital' and light feeds
-AdafruitIO_Feed *digital = io.feed("digital");
-AdafruitIO_Feed *light = io.feed("light");
+// 'digital' feed is used for the button press
+//AdafruitIO_Feed *digital = io.feed("digital");
+//AdafruitIO_Feed *light = io.feed("light");
 AdafruitIO_Feed *waterIntervalFeed = io.feed("watering-interval");
 AdafruitIO_Feed *lightThresholdFeed = io.feed("light-threshold");
+// light sensor
 AdafruitIO_Feed *analog = io.feed("analog");
 AdafruitIO_Feed *moistureLevelFeed = io.feed("moisture-level");
 AdafruitIO_Feed *moistureThresholdFeed = io.feed("moisture-threshold");
@@ -59,7 +60,9 @@ AdafruitIO_Feed *moistureThresholdFeed = io.feed("moisture-threshold");
 
 
 void setup() {
+  // Read default values
   timeAtLastWater = - wateringInterval;
+
   // set button pin as an input
   pinMode(BUTTON_PIN, INPUT);
 
@@ -122,7 +125,7 @@ void loop() {
     // save the current state to the 'digital' feed on adafruit io
     Serial.print("sending button -> ");
     Serial.println(current);
-    digital->save(current);
+//    digital->save(current);
   
     // store last button state
     last = current;
@@ -137,9 +140,9 @@ void loop() {
   }
 
   //***************
-  // read the light value every 1 second
+  // read the light value every 10 seconds
   //***************
-  if (millis()/1000 - lastLightReadTime > 10)
+  if ((millis()/1000 - lastLightReadTime) > 10)
   {  // read the light and send it to the feed, then update the time variable
     curLightVal = analogRead(PHOTOCELL_PIN);
     analog->save(curLightVal);
@@ -149,6 +152,9 @@ void loop() {
   //***************
   // Check for problems due to light
   //***************
+//  Serial.println(curLightVal);
+//  Serial.println(lightThreshold);
+//  Serial.println(curLightVal < lightThreshold);
   if (curLightVal < lightThreshold) {
     // LED indicated need for light
     // TODO: RGB code here
@@ -167,16 +173,45 @@ void handleWaterChecks(){
    // current time in seconds
    currTime = millis()/1000;
      
-   if((currTime > (timeAtLastWater + wateringInterval)) || (moistureLevel < moistureThreshold )){
+   if(currTime > (timeAtLastWater + wateringInterval)){
     //plant needs to be watered
-    
+      Serial.println("Too long since watering");
+//      Serial.println(currTime);
+//      Serial.println(timeAtLastWater);
+//      Serial.println(wateringInterval);
+      playSound1();    
+    // TODO: RGB code here
+    digitalWrite(LED_PIN, HIGH);
+  } 
+  if ( moistureLevel < moistureThreshold ) {
+      Serial.println("Not moist enough");
+      playSound2();        
+  }
+  else{
+    // doesn't need watering
+    noTone(PIEZEO_PIN);
+    // TODO: RGB code here
+    digitalWrite(LED_PIN, LOW);
+  }
+
+}
+
+void playSound1() {
     if((currTime)% alarmInterval == 0){
       //play alarm
-      Serial.println("needs watering");
       for (int i=0; i < toneCount; ++i) {
         tone(PIEZEO_PIN, toneFreq[i]);
         delay(500);  // Pause for half a second.
       }
+    }
+    else {
+       noTone(PIEZEO_PIN);
+    }
+}
+
+void playSound2() {
+    if((currTime)% alarmInterval == 1){
+      //play alarm
       // Loop down through all the tones from finish to start again.
       for (int i=toneCount-1; i >= 0; --i) {
         tone(PIEZEO_PIN, toneFreq[i]);
@@ -186,15 +221,6 @@ void handleWaterChecks(){
     else {
        noTone(PIEZEO_PIN);
     }
-    // TODO: RGB code here
-    digitalWrite(LED_PIN, HIGH);
-  }
-  else{
-    noTone(PIEZEO_PIN);
-    // TODO: RGB code here
-    digitalWrite(LED_PIN, LOW);
-  }
-
 }
 
 // ***************
