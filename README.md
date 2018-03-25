@@ -15,7 +15,8 @@ IOT Hackathon 2018, Puppet
    - Reduced stress
    - Basic education about gardening
 
-Solution:
+**Solution:**
+
 Plant.io can help by monitoring moisture and light levels, reminding you when it's time to water and giving a visual and audible indication of the plant’s overall wellness.
 
 ## Demo
